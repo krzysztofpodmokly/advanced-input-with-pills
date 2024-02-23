@@ -1,0 +1,115 @@
+.form {
+  background: var(--color-secondary);
+
+  .contentWrapper {
+    padding: 10px;
+    .userInteraction {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: salmon;
+      padding: 5px;
+      border-radius: 15px;
+
+      .inputWrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        .input {
+          width: 150px;
+          border: none;
+
+          &:focus {
+            outline: none;
+          }
+        }
+
+        .dropdownArrow {
+          width: 25px;
+          height: 15px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+
+          .arrowIndicator {
+            width: 5px;
+            height: 5px;
+            background: #000;
+          }
+        }
+      }
+
+      .pill {
+        border-radius: 5px;
+        background: var(--pill-bg);
+        width: 100%;
+        padding: 5px;
+        display: flex;
+        justify-content: space-between;
+        margin: 0 5px;
+        color: var(--color-secondary);
+
+        .removePill {
+          color: var(--pill-remove);
+
+          &:hover {
+            cursor: pointer;
+          }
+        }
+      }
+    }
+  }
+
+  .submitButton {
+    display: none;
+  }
+
+  .dropdown {
+    padding: 10px;
+
+    .textWrapper {
+      display: flex;
+      align-items: center;
+      margin: 15px 0;
+      h3 {
+        margin: 0;
+      }
+
+      button {
+        background: none;
+        border: none;
+        margin-left: 10px;
+        &:hover {
+          cursor: pointer;
+        }
+      }
+      .deselectAll {
+        color: lightcoral;
+      }
+      .selectAll {
+        color: lightgreen;
+      }
+    }
+
+    .continents {
+      display: flex;
+      justify-content: space-between;
+      .continent {
+        width: 100%;
+        .continentTabs {
+          .continentTab {
+            border-radius: 5px;
+
+            &.active {
+              background: lightgreen;
+            }
+
+            &:hover {
+              cursor: pointer;
+            }
+          }
+        }
+      }
+    }
+  }
+}

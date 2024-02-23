@@ -1,0 +1,21 @@
+body {
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --main-bg: #1d3557;
+  --pill-bg: #457b9d;
+  --pill-remove: #a8dadc;
+  --color-secondary: #f1faee;
+  --color-tertiary: #e63946;
+}
+
+main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+  background: var(--main-bg);
+}
