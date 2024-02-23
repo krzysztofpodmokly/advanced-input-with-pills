@@ -65,10 +65,17 @@ const AdvancedInput = () => {
       )
       .map((country) => country.name);
 
+    const isCountryChecked = matchingCountries.some((country) =>
+      checkedCountries.includes(country)
+    );
+
+    if (isCountryChecked) return;
+
     setCountryPills((prevState) => {
       return [...prevState, ...matchingCountries];
     });
     setUserInput("");
+
     setCheckedCountries((prevState) => [...prevState, ...matchingCountries]);
   };
 
@@ -86,8 +93,23 @@ const AdvancedInput = () => {
   };
 
   const handleContinentTabSwitch = (continentName: string) => {
+    const selectAllCountriesByContinent = allCountries
+      .filter((country: ICountry) =>
+        continentTab ? country.region === continentName : country
+      )
+      .map((country: ICountry) => country.name);
+    const allSelectedCountriesIncluded = selectAllCountriesByContinent.every(
+      (country: string) => checkedCountries.includes(country)
+    );
+
+    if (allSelectedCountriesIncluded) {
+      setIsSelectAllClicked(true);
+    } else {
+      setIsSelectAllClicked(false);
+    }
+
     setContinentTab(continentName);
-    setIsSelectAllClicked(false);
+
     setFilteredCountries(
       allCountries.filter(
         (country: ICountry) => country.region === continentName
@@ -98,7 +120,7 @@ const AdvancedInput = () => {
 
   const handleCountryCheckbox = (
     event: React.ChangeEvent<HTMLInputElement>,
-    country: any
+    country: ICountry
   ) => {
     const isChecked = event.target.checked;
 
@@ -124,29 +146,63 @@ const AdvancedInput = () => {
   };
 
   const handleSelectAll = (continentTab: string) => {
-    const selectAllCountries = allCountries
+    const selectAllCountriesByContinent = allCountries
       .filter((country: ICountry) =>
         continentTab ? country.region === continentTab : country
       )
       .map((country: ICountry) => country.name);
-    if (_.isEmpty(_.xor(selectAllCountries, checkedCountries))) return;
+
+    if (_.isEmpty(_.xor(selectAllCountriesByContinent, checkedCountries))) {
+      return;
+    }
 
     setIsSelectAllClicked(!isSelectAllClicked);
 
     setCheckedCountries((prevState) => {
-      return [...prevState, ...selectAllCountries];
+      return [...prevState, ...selectAllCountriesByContinent];
     });
     setFilteredCountries((prevState) => prevState);
     setCountryPills((prevState) => {
-      return [...prevState, ...selectAllCountries];
+      return [...prevState, ...selectAllCountriesByContinent];
     });
   };
 
-  const handleDeselectAll = (continentTab: string) => {
-    setIsSelectAllClicked(!isSelectAllClicked);
-    setCheckedCountries([]);
-    setFilteredCountries(allCountries);
-    setCountryPills([]);
+  const handleDeselectAll = (continentName: string) => {
+    const deselectCountriesByContinent = allCountries
+      .filter((country: ICountry) =>
+        continentTab ? country.region === continentName : country
+      )
+      .map((country: ICountry) => country.name);
+
+    const allDeselectedCountriesIncluded = deselectCountriesByContinent.every(
+      (country: string) => checkedCountries.includes(country)
+    );
+
+    if (allDeselectedCountriesIncluded) {
+      setIsSelectAllClicked(false);
+    } else {
+      setIsSelectAllClicked(true);
+    }
+
+    setCheckedCountries((prevState) => {
+      const shouldDeselectOptions = prevState.every((country: string) =>
+        deselectCountriesByContinent.includes(country)
+      );
+      return shouldDeselectOptions ? [] : deselectCountriesByContinent;
+    });
+    setFilteredCountries((prevState) => {
+      // const shouldDeselectOptions = prevState
+      //   .map((country) => country.name)
+      //   .every((country) => deselectCountriesByContinent.includes(country));
+      return prevState;
+    });
+
+    setCountryPills((prevState) => {
+      const shouldDeselectOptions = prevState.every((country: string) =>
+        deselectCountriesByContinent.includes(country)
+      );
+      return shouldDeselectOptions ? [] : deselectCountriesByContinent;
+    });
   };
 
   return (
