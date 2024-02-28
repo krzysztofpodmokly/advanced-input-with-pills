@@ -2,6 +2,10 @@ import { IContinent } from "./components/input/interface";
 
 export const continentsWithCountries: IContinent[] = [
   {
+    continent: "All",
+    countries: [],
+  },
+  {
     continent: "Europe",
     countries: [
       {

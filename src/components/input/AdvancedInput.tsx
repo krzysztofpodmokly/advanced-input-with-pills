@@ -11,7 +11,7 @@ const AdvancedInput = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [countryPills, setCountryPills] = useState<string[]>([]);
 
-  const [continentTab, setContinentTab] = useState<string>("");
+  const [continentTab, setContinentTab] = useState<string>("All");
   const [checkedCountries, setCheckedCountries] = useState<string[]>([]);
   const [isSelectAllClicked, setIsSelectAllClicked] = useState<boolean>(false);
 
@@ -89,13 +89,38 @@ const AdvancedInput = () => {
     setCheckedCountries((prevState) => {
       return prevState.filter((countryName: string) => countryName !== pill);
     });
-    setFilteredCountries(allCountries);
+
+    const countryContinentOrigin = allCountries.find(
+      (country: ICountry) => country.name === pill
+    )?.region;
+
+    if (continentTab === "All") {
+      setFilteredCountries(allCountries);
+    } else {
+      setFilteredCountries((prevState) => {
+        return prevState.filter((c) => c.region === continentTab);
+      });
+    }
+
+    if (countryContinentOrigin && continentTab !== countryContinentOrigin) {
+      setContinentTab(countryContinentOrigin);
+      setFilteredCountries(
+        allCountries.filter((country: ICountry) =>
+          countryContinentOrigin === "All"
+            ? country.region
+            : country.region === countryContinentOrigin
+        )
+      );
+    }
+    setIsSelectAllClicked(false);
   };
 
   const handleContinentTabSwitch = (continentName: string) => {
     const selectAllCountriesByContinent = allCountries
       .filter((country: ICountry) =>
-        continentTab ? country.region === continentName : country
+        continentTab && continentName !== "All"
+          ? country.region === continentName
+          : country
       )
       .map((country: ICountry) => country.name);
     const allSelectedCountriesIncluded = selectAllCountriesByContinent.every(
@@ -111,8 +136,10 @@ const AdvancedInput = () => {
     setContinentTab(continentName);
 
     setFilteredCountries(
-      allCountries.filter(
-        (country: ICountry) => country.region === continentName
+      allCountries.filter((country: ICountry) =>
+        continentName === "All"
+          ? country.region
+          : country.region === continentName
       )
     );
     setUserInput("");
@@ -139,16 +166,29 @@ const AdvancedInput = () => {
         );
       });
     }
+
+    const updatedCheckedCountries = [...checkedCountries, country.name];
+
+    const areAllOptionsSelected = filteredCountries
+      .map((country: ICountry) => country.name)
+      .every((country: string) => updatedCheckedCountries.includes(country));
+    if (areAllOptionsSelected) {
+      setIsSelectAllClicked(true);
+    } else {
+      setIsSelectAllClicked(false);
+    }
   };
 
   const handleInputFocus = () => {
     setIsOpen(true);
   };
 
-  const handleSelectAll = (continentTab: string) => {
+  const handleSelectAll = (currentContinentTab: string) => {
     const selectAllCountriesByContinent = allCountries
       .filter((country: ICountry) =>
-        continentTab ? country.region === continentTab : country
+        currentContinentTab && currentContinentTab !== "All"
+          ? country.region === currentContinentTab
+          : country
       )
       .map((country: ICountry) => country.name);
 
@@ -163,30 +203,37 @@ const AdvancedInput = () => {
     });
     setFilteredCountries((prevState) => prevState);
     setCountryPills((prevState) => {
-      return [...prevState, ...selectAllCountriesByContinent];
+      return _.uniq([...prevState, ...selectAllCountriesByContinent]);
     });
   };
 
-  const handleDeselectAll = (continentName: string) => {
+  const handleDeselectAll = (currentContinentTab: string) => {
     const deselectCountriesByContinent = allCountries
       .filter((country: ICountry) =>
-        continentTab ? country.region === continentName : country
+        continentTab && continentTab !== "All"
+          ? country.region !== currentContinentTab
+          : country
       )
       .map((country: ICountry) => country.name);
 
-    const allDeselectedCountriesIncluded = deselectCountriesByContinent.every(
-      (country: string) => checkedCountries.includes(country)
-    );
+    // const allDeselectedCountriesIncluded = deselectCountriesByContinent.every(
+    //   (country: string) => checkedCountries.includes(country)
+    // );
 
-    if (allDeselectedCountriesIncluded) {
-      setIsSelectAllClicked(false);
-    } else {
-      setIsSelectAllClicked(true);
-    }
+    // console.log(filteredCountries);
+    setIsSelectAllClicked(!isSelectAllClicked);
+    // if (allDeselectedCountriesIncluded) {
+    //   setIsSelectAllClicked(false);
+    // } else {
+    //   setIsSelectAllClicked(true);
+    // }
 
     setCheckedCountries((prevState) => {
+      const mappedFilteredCountries = filteredCountries.map(
+        (country: ICountry) => country.name
+      );
       const shouldDeselectOptions = prevState.every((country: string) =>
-        deselectCountriesByContinent.includes(country)
+        mappedFilteredCountries.includes(country)
       );
       return shouldDeselectOptions ? [] : deselectCountriesByContinent;
     });
@@ -198,8 +245,11 @@ const AdvancedInput = () => {
     });
 
     setCountryPills((prevState) => {
+      const mappedFilteredCountries = filteredCountries.map(
+        (country: ICountry) => country.name
+      );
       const shouldDeselectOptions = prevState.every((country: string) =>
-        deselectCountriesByContinent.includes(country)
+        mappedFilteredCountries.includes(country)
       );
       return shouldDeselectOptions ? [] : deselectCountriesByContinent;
     });
