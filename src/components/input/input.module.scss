@@ -67,6 +67,12 @@
   .dropdown {
     padding: 10px;
 
+    .switchWrapper {
+      height: 50px;
+      width: 100%;
+      display: flex;
+    }
+
     .textWrapper {
       display: flex;
       align-items: center;

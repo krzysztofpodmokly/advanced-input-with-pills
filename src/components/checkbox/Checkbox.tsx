@@ -6,7 +6,7 @@ const Checkbox = (props: any) => {
       <input
         className={styles.checkbox}
         type="checkbox"
-        checked={props.isChecked}
+        checked={props.checked}
         onChange={props.onChange}
         id={props.label}
         value={props.value}

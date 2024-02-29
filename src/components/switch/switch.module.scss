@@ -1,61 +1,55 @@
-.switchWrapper {
-  height: 50px;
-  width: 100%;
-  display: flex;
+.toggleSwitch {
+  position: relative;
+  width: 6rem;
 
-  .toggleSwitch {
-    position: relative;
-    width: 6rem;
+  .switch {
+    position: absolute;
+    width: 5rem;
+    height: 2.6rem;
+    display: flex;
+    background-color: #c9c9c9;
+    border-radius: 2rem;
 
-    .switch {
+    &.on {
+      background-color: lightgreen;
+    }
+
+    & > input {
       position: absolute;
-      width: 5rem;
-      height: 2.6rem;
-      display: flex;
-      background-color: #c9c9c9;
-      border-radius: 2rem;
+      opacity: 0;
+      cursor: pointer;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
 
-      &.on {
-        background-color: lightgreen;
+      &:disabled {
+        cursor: not-allowed;
       }
+    }
 
-      & > input {
+    &.disabled {
+      filter: grayscale(0.6);
+    }
+
+    & > span {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+
+      &::after {
+        content: "";
+        transition: 0.2s linear;
         position: absolute;
-        opacity: 0;
-        cursor: pointer;
-        z-index: 1;
-        width: 100%;
-        height: 100%;
-
-        &:disabled {
-          cursor: not-allowed;
-        }
+        background-color: #eee;
+        border-radius: 2rem;
+        left: 0.2rem;
+        top: 0.2rem;
+        width: 2.2rem;
+        height: 2.2rem;
       }
 
-      &.disabled {
-        filter: grayscale(0.6);
-      }
-
-      & > span {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-
-        &::after {
-          content: "";
-          transition: 0.2s linear;
-          position: absolute;
-          background-color: #eee;
-          border-radius: 2rem;
-          left: 0.2rem;
-          top: 0.2rem;
-          width: 2.2rem;
-          height: 2.2rem;
-        }
-
-        &.on::after {
-          left: 2.6rem;
-        }
+      &.on::after {
+        left: 2.6rem;
       }
     }
   }

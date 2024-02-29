@@ -257,9 +257,17 @@ const AdvancedInput = () => {
     });
   };
 
-  const handleSwitch = () => {
-    console.log("switch");
+  const [isCountriesToggled, setIsCountriesToggled] = useState<boolean>(false);
+
+  const handleCountriesToggle = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    console.log(event.target.name);
+
+    setIsCountriesToggled(!isCountriesToggled);
   };
+
+  // console.log(isCountriesToggled);
 
   return (
     <form className={styles.form} onSubmit={handleSubmit}>
@@ -299,7 +307,19 @@ const AdvancedInput = () => {
       </button>
       {isOpen && (
         <div className={styles.dropdown}>
-          <Switch />
+          <div className={styles.switchWrapper}>
+            <Switch
+              checked={isCountriesToggled}
+              onChange={handleCountriesToggle}
+              label="countries-toggle"
+            />
+            <Checkbox
+              label="countries-toggle"
+              checked={isCountriesToggled}
+              onChange={handleCountriesToggle}
+              value={"Activation countries"}
+            />
+          </div>
 
           <div className={styles.textWrapper}>
             <h3>Region</h3>
@@ -349,20 +369,6 @@ const AdvancedInput = () => {
             {filteredCountries.map((country: ICountry) => {
               return (
                 <div key={country.code}>
-                  {/* <input
-                    id={country.code}
-                    type="checkbox"
-                    checked={
-                      checkedCountries.includes(country.name) &&
-                      countryPills.includes(country.name)
-                    }
-                    onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-                      handleCountryCheckbox(event, country)
-                    }
-                    value={country.name}
-                  />
-                  <label htmlFor={country.code}>{country.name}</label> */}
-
                   <Checkbox
                     label={country.code}
                     checked={
