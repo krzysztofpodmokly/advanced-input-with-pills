@@ -41,7 +41,7 @@
 
       .pill {
         border-radius: 5px;
-        background: var(--pill-bg);
+
         width: 100%;
         padding: 5px;
         display: flex;
@@ -49,8 +49,17 @@
         margin: 0 5px;
         color: var(--color-secondary);
 
+        &.activation {
+          background: var(--pill-activation-bg);
+        }
+
+        &.restricted {
+          background: var(--pill-restricted-bg);
+        }
+
         .removePill {
-          color: var(--pill-remove);
+          // color: var(--pill-remove);
+          margin-left: 10px;
 
           &:hover {
             cursor: pointer;

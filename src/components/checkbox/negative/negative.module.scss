@@ -1,0 +1,78 @@
+.checkboxWrapper {
+  --size: 20px;
+  --border-size: 2px;
+
+  position: relative;
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.checkboxWrapper *,
+.checkboxWrapper *::after,
+.checkboxWrapper *::before {
+  box-sizing: border-box;
+}
+
+.checkboxWrapper input[type="checkbox"] {
+  display: inline-block;
+  vertical-align: middle;
+  opacity: 0;
+}
+
+.checkboxWrapper input[type="checkbox"],
+.checkboxWrapper label::before {
+  width: var(--size);
+  height: var(--size);
+  position: absolute;
+  left: 0;
+  // top: 50%;
+  // transform: translateY(-50%);
+}
+
+.checkboxWrapper label {
+  display: inline-block;
+  position: relative;
+  padding: 0 0 0 calc(var(--size) + 7px);
+}
+
+.checkboxWrapper label::before {
+  content: "";
+  border: var(--border-size) solid #e14a44;
+  opacity: 0.7;
+  transition: opacity 0.3s;
+  background-color: #e14a44;
+}
+
+.checkboxWrapper input[type="checkbox"]:checked + label::before {
+  opacity: 1;
+}
+
+// .checkboxWrapper input[type="checkbox"]:not(:checked) + label::before {
+//   opacity: 0;
+// }
+
+.checkboxWrapper svg {
+  position: absolute;
+  top: calc(20% + var(--border-size));
+  left: var(--border-size);
+  width: calc(var(--size) - (var(--border-size) * 2));
+  height: calc(var(--size) - (var(--border-size) * 2));
+  margin-top: calc(var(--size) / -2);
+  pointer-events: none;
+}
+
+.checkboxWrapper svg path {
+  stroke-width: 0;
+  fill: none;
+  transition: stroke-dashoffset 0.2s ease-in 0s;
+}
+
+.checkboxWrapper svg path + path {
+  transition: stroke-dashoffset 0.2s ease-out 0.2s;
+}
+
+.checkboxWrapper input[type="checkbox"]:checked ~ svg path {
+  stroke-dashoffset: 0;
+  stroke-width: calc(var(--size) / 2);
+}

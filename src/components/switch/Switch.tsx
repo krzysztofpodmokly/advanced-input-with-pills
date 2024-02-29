@@ -15,7 +15,6 @@ const Switch = (props: any) => {
           type="checkbox"
           checked={props.checked}
           onChange={props.onChange}
-          id={props.label}
         />
         <span
           className={cn({

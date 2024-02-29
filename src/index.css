@@ -5,7 +5,8 @@ body {
 
 :root {
   --main-bg: #1d3557;
-  --pill-bg: #457b9d;
+  --pill-activation-bg: lightgreen;
+  --pill-restricted-bg: darkred;
   --pill-remove: #a8dadc;
   --color-secondary: #f1faee;
   --color-tertiary: #e63946;

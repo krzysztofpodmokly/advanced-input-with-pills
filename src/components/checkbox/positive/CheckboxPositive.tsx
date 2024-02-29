@@ -1,6 +1,6 @@
-import styles from "./checkbox.module.scss";
+import styles from "./positive.module.scss";
 
-const Checkbox = (props: any) => {
+const CheckboxPositive = (props: any) => {
   return (
     <div className={styles.checkboxWrapper}>
       <input
@@ -16,4 +16,4 @@ const Checkbox = (props: any) => {
   );
 };
 
-export default Checkbox;
+export default CheckboxPositive;

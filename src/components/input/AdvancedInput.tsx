@@ -6,7 +6,10 @@ import styles from "./input.module.scss";
 import { continentsWithCountries } from "../../continents";
 import { IContinent, ICountry } from "./interface";
 import Switch from "../switch/Switch";
-import Checkbox from "../checkbox/Checkbox";
+// import Checkbox from "../checkbox/positive/CheckboxPositive";
+import CheckboxNegative from "../checkbox/negative/CheckboxNegative";
+import CheckboxPositive from "../checkbox/positive/CheckboxPositive";
+import Output from "../output/Output";
 
 const AdvancedInput = () => {
   const [userInput, setUserInput] = useState<string>("");
@@ -67,7 +70,7 @@ const AdvancedInput = () => {
       )
       .map((country) => country.name);
 
-    const isCountryChecked = matchingCountries.some((country) =>
+    const isCountryChecked = matchingCountries.some((country: string) =>
       checkedCountries.includes(country)
     );
 
@@ -79,6 +82,8 @@ const AdvancedInput = () => {
     setUserInput("");
 
     setCheckedCountries((prevState) => [...prevState, ...matchingCountries]);
+    setFilteredCountries(allCountries);
+    setContinentTab("All");
   };
 
   const handleRemovePill = (pill: string) => {
@@ -218,17 +223,7 @@ const AdvancedInput = () => {
       )
       .map((country: ICountry) => country.name);
 
-    // const allDeselectedCountriesIncluded = deselectCountriesByContinent.every(
-    //   (country: string) => checkedCountries.includes(country)
-    // );
-
-    // console.log(filteredCountries);
     setIsSelectAllClicked(!isSelectAllClicked);
-    // if (allDeselectedCountriesIncluded) {
-    //   setIsSelectAllClicked(false);
-    // } else {
-    //   setIsSelectAllClicked(true);
-    // }
 
     setCheckedCountries((prevState) => {
       const mappedFilteredCountries = filteredCountries.map(
@@ -240,9 +235,6 @@ const AdvancedInput = () => {
       return shouldDeselectOptions ? [] : deselectCountriesByContinent;
     });
     setFilteredCountries((prevState) => {
-      // const shouldDeselectOptions = prevState
-      //   .map((country) => country.name)
-      //   .every((country) => deselectCountriesByContinent.includes(country));
       return prevState;
     });
 
@@ -259,117 +251,134 @@ const AdvancedInput = () => {
 
   const [isCountriesToggled, setIsCountriesToggled] = useState<boolean>(false);
 
-  const handleCountriesToggle = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    console.log(event.target.name);
-
+  const handleCountriesToggle = () => {
     setIsCountriesToggled(!isCountriesToggled);
   };
 
-  // console.log(isCountriesToggled);
+  const mockData = {
+    restrictedCountries: [{ continent: "Europe", countries: ["Poland"] }],
+  };
 
   return (
-    <form className={styles.form} onSubmit={handleSubmit}>
-      <div className={styles.contentWrapper}>
-        <div className={styles.userInteraction}>
-          {countryPills.map((pill: string) => {
-            return (
-              <div key={pill} className={styles.pill}>
-                <div>{pill}</div>
-                <div
-                  onClick={() => handleRemovePill(pill)}
-                  className={styles.removePill}
-                >
-                  x
-                </div>
-              </div>
-            );
-          })}
-          <div className={styles.inputWrapper}>
-            <input
-              className={styles.input}
-              type="text"
-              onChange={handleInputChange}
-              value={userInput}
-              onFocus={handleInputFocus}
-              // onKeyDown={handleSubmit}
-            />
-            <div className={styles.dropdownArrow} onClick={handleDropdownOpen}>
-              <div className={styles.arrowIndicator} />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <button type="submit" className={styles.submitButton}>
-        submit
-      </button>
-      {isOpen && (
-        <div className={styles.dropdown}>
-          <div className={styles.switchWrapper}>
-            <Switch
-              checked={isCountriesToggled}
-              onChange={handleCountriesToggle}
-              label="countries-toggle"
-            />
-            <Checkbox
-              label="countries-toggle"
-              checked={isCountriesToggled}
-              onChange={handleCountriesToggle}
-              value={"Activation countries"}
-            />
-          </div>
-
-          <div className={styles.textWrapper}>
-            <h3>Region</h3>
-          </div>
-          <div className={styles.continents}>
-            {continentsWithCountries.map((continent: IContinent) => {
+    <>
+      <Output data={mockData} />
+      <form className={styles.form} onSubmit={handleSubmit}>
+        <div className={styles.contentWrapper}>
+          <div className={styles.userInteraction}>
+            {countryPills.map((pill: string) => {
               return (
-                <div key={continent.continent} className={styles.continent}>
-                  <div className={styles.continentTabs}>
-                    <button
-                      className={cn(styles.continentTab, {
-                        [styles.active]: continentTab === continent.continent,
-                      })}
-                      type="button"
-                      onClick={() =>
-                        handleContinentTabSwitch(continent.continent)
-                      }
-                    >
-                      {continent.continent}
-                    </button>
+                <div
+                  key={pill}
+                  className={cn(styles.pill, {
+                    [styles.activation]: isCountriesToggled,
+                    [styles.restricted]: !isCountriesToggled,
+                  })}
+                >
+                  <div>{pill}</div>
+                  <div
+                    onClick={() => handleRemovePill(pill)}
+                    className={styles.removePill}
+                  >
+                    x
                   </div>
                 </div>
               );
             })}
-          </div>
-          <div className={styles.textWrapper}>
-            <h3>Country</h3>
-            {isSelectAllClicked ? (
-              <button
-                className={styles.deselectAll}
-                type="button"
-                onClick={() => handleDeselectAll(continentTab)}
+            <div className={styles.inputWrapper}>
+              <input
+                className={styles.input}
+                type="text"
+                onChange={handleInputChange}
+                value={userInput}
+                onFocus={handleInputFocus}
+                // onKeyDown={handleSubmit}
+              />
+              <div
+                className={styles.dropdownArrow}
+                onClick={handleDropdownOpen}
               >
-                Deselect all
-              </button>
-            ) : (
-              <button
-                className={styles.selectAll}
-                type="button"
-                onClick={() => handleSelectAll(continentTab)}
-              >
-                Select all
-              </button>
-            )}
+                <div className={styles.arrowIndicator} />
+              </div>
+            </div>
           </div>
-          <div>
-            {filteredCountries.map((country: ICountry) => {
-              return (
-                <div key={country.code}>
-                  <Checkbox
+        </div>
+
+        <button type="submit" className={styles.submitButton}>
+          submit
+        </button>
+        {isOpen && (
+          <div className={styles.dropdown}>
+            <div className={styles.switchWrapper}>
+              <Switch
+                checked={isCountriesToggled}
+                onChange={handleCountriesToggle}
+              />
+              {isCountriesToggled ? (
+                <CheckboxPositive
+                  label="activation-countries-toggle"
+                  checked={true}
+                  onChange={handleCountriesToggle}
+                  value={"Activation countries"}
+                />
+              ) : (
+                <CheckboxNegative
+                  label="restricted-countries-toggle"
+                  checked={true}
+                  onChange={handleCountriesToggle}
+                  value={"Restricted countries"}
+                />
+              )}
+            </div>
+
+            <div className={styles.textWrapper}>
+              <h3>Region</h3>
+            </div>
+            <div className={styles.continents}>
+              {continentsWithCountries.map((continent: IContinent) => {
+                return (
+                  <div key={continent.continent} className={styles.continent}>
+                    <div className={styles.continentTabs}>
+                      <button
+                        className={cn(styles.continentTab, {
+                          [styles.active]: continentTab === continent.continent,
+                        })}
+                        type="button"
+                        onClick={() =>
+                          handleContinentTabSwitch(continent.continent)
+                        }
+                      >
+                        {continent.continent}
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            <div className={styles.textWrapper}>
+              <h3>Country</h3>
+              {isSelectAllClicked ? (
+                <button
+                  className={styles.deselectAll}
+                  type="button"
+                  onClick={() => handleDeselectAll(continentTab)}
+                >
+                  Deselect all
+                </button>
+              ) : (
+                <button
+                  className={styles.selectAll}
+                  type="button"
+                  onClick={() => handleSelectAll(continentTab)}
+                >
+                  Select all
+                </button>
+              )}
+            </div>
+            <div>
+              {filteredCountries.map((country: ICountry) => {
+                return isCountriesToggled ? (
+                  <CheckboxPositive
+                    key={country.code}
                     label={country.code}
                     checked={
                       checkedCountries.includes(country.name) &&
@@ -380,13 +389,26 @@ const AdvancedInput = () => {
                     }
                     value={country.name}
                   />
-                </div>
-              );
-            })}
+                ) : (
+                  <CheckboxNegative
+                    key={country.code}
+                    label={country.code}
+                    checked={
+                      checkedCountries.includes(country.name) &&
+                      countryPills.includes(country.name)
+                    }
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+                      handleCountryCheckbox(event, country)
+                    }
+                    value={country.name}
+                  />
+                );
+              })}
+            </div>
           </div>
-        </div>
-      )}
-    </form>
+        )}
+      </form>
+    </>
   );
 };
 
