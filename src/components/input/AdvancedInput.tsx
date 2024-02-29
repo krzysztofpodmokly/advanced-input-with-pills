@@ -5,6 +5,8 @@ import cn from "classnames";
 import styles from "./input.module.scss";
 import { continentsWithCountries } from "../../continents";
 import { IContinent, ICountry } from "./interface";
+import Switch from "../switch/Switch";
+import Checkbox from "../checkbox/Checkbox";
 
 const AdvancedInput = () => {
   const [userInput, setUserInput] = useState<string>("");
@@ -255,6 +257,10 @@ const AdvancedInput = () => {
     });
   };
 
+  const handleSwitch = () => {
+    console.log("switch");
+  };
+
   return (
     <form className={styles.form} onSubmit={handleSubmit}>
       <div className={styles.contentWrapper}>
@@ -293,8 +299,10 @@ const AdvancedInput = () => {
       </button>
       {isOpen && (
         <div className={styles.dropdown}>
+          <Switch />
+
           <div className={styles.textWrapper}>
-            <h3>Regions</h3>
+            <h3>Region</h3>
           </div>
           <div className={styles.continents}>
             {continentsWithCountries.map((continent: IContinent) => {
@@ -302,12 +310,9 @@ const AdvancedInput = () => {
                 <div key={continent.continent} className={styles.continent}>
                   <div className={styles.continentTabs}>
                     <button
-                      className={cn(
-                        styles.continentTab,
-                        continentTab === continent.continent
-                          ? styles.active
-                          : ""
-                      )}
+                      className={cn(styles.continentTab, {
+                        [styles.active]: continentTab === continent.continent,
+                      })}
                       type="button"
                       onClick={() =>
                         handleContinentTabSwitch(continent.continent)
@@ -344,7 +349,7 @@ const AdvancedInput = () => {
             {filteredCountries.map((country: ICountry) => {
               return (
                 <div key={country.code}>
-                  <input
+                  {/* <input
                     id={country.code}
                     type="checkbox"
                     checked={
@@ -356,7 +361,19 @@ const AdvancedInput = () => {
                     }
                     value={country.name}
                   />
-                  <label htmlFor={country.code}>{country.name}</label>
+                  <label htmlFor={country.code}>{country.name}</label> */}
+
+                  <Checkbox
+                    label={country.code}
+                    checked={
+                      checkedCountries.includes(country.name) &&
+                      countryPills.includes(country.name)
+                    }
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+                      handleCountryCheckbox(event, country)
+                    }
+                    value={country.name}
+                  />
                 </div>
               );
             })}
