@@ -1,12 +1,16 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap");
+
 body {
   margin: 0;
   padding: 0;
+
+  font-family: "Roboto Condensed", sans-serif;
 }
 
 :root {
   --main-bg: #1d3557;
-  --pill-activation-bg: lightgreen;
-  --pill-restricted-bg: darkred;
+  --pill-activation-bg: #46cb70;
+  --pill-restricted-bg: #d94726;
   --pill-remove: #a8dadc;
   --color-secondary: #f1faee;
   --color-tertiary: #e63946;
@@ -19,4 +23,9 @@ main {
   width: 100vw;
   height: 100vh;
   background: var(--main-bg);
+}
+
+button,
+input {
+  font-family: "Roboto Condensed";
 }

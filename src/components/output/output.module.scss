@@ -1,0 +1,26 @@
+.wrapper {
+  position: absolute;
+  top: 30px;
+  left: 30px;
+  background: #eee;
+  padding: 20px;
+  border-radius: 15px;
+  height: 500px;
+  overflow-y: scroll;
+  width: 300px;
+
+  h3 {
+    position: fixed;
+    width: inherit;
+    background-color: #eee;
+    z-index: 1;
+    padding: 10px 0;
+    top: 11px;
+  }
+
+  code {
+    margin-top: 3rem;
+    position: relative;
+    display: block;
+  }
+}

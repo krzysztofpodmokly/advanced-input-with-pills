@@ -6,9 +6,7 @@ import styles from "./input.module.scss";
 import { continentsWithCountries } from "../../continents";
 import { IContinent, ICountry, IFormPayload } from "./interface";
 import Switch from "../switch/Switch";
-// import Checkbox from "../checkbox/positive/CheckboxPositive";
-import CheckboxNegative from "../checkbox/negative/CheckboxNegative";
-import CheckboxPositive from "../checkbox/positive/CheckboxPositive";
+import Checkbox from "../checkbox/Checkbox";
 import Output from "../output/Output";
 
 const AdvancedInput = () => {
@@ -386,47 +384,49 @@ const AdvancedInput = () => {
   };
 
   return (
-    <>
+    <div className={styles.wrapper}>
       <Output data={formPayload} />
       <form className={styles.form} onSubmit={handleSubmit}>
         <div className={styles.contentWrapper}>
           <div className={styles.userInteraction}>
-            {countryPills.map((pill: string) => {
-              return (
-                <div
-                  key={pill}
-                  className={cn(styles.pill, {
-                    [styles.activation]: isCountriesToggled,
-                    [styles.restricted]: !isCountriesToggled,
-                  })}
-                >
-                  <div>{pill}</div>
+            <div className={styles.pillsWithInput}>
+              {countryPills.map((pill: string) => {
+                return (
                   <div
-                    onClick={() => handleRemovePill(pill)}
-                    className={styles.removePill}
+                    key={pill}
+                    className={cn(styles.pill, {
+                      [styles.activation]: isCountriesToggled,
+                      [styles.restricted]: !isCountriesToggled,
+                    })}
                   >
-                    x
+                    <div className={styles.countryName}>{pill}</div>
+                    <div
+                      onClick={() => handleRemovePill(pill)}
+                      className={styles.removePill}
+                    >
+                      ✖
+                    </div>
                   </div>
-                </div>
-              );
-            })}
-            <div className={styles.inputWrapper}>
-              <input
-                className={styles.input}
-                type="text"
-                onChange={handleInputChange}
-                value={userInput}
-                onFocus={handleInputFocus}
-                // onKeyDown={handleSubmit}
-              />
-              <div
-                className={styles.dropdownArrow}
-                onClick={handleDropdownOpen}
-              >
-                <div className={styles.arrowIndicator} />
+                );
+              })}
+              <div className={styles.inputWrapper}>
+                <input
+                  className={cn(styles.input, {
+                    [styles.noPills]: !countryPills.length,
+                  })}
+                  type="text"
+                  onChange={handleInputChange}
+                  value={userInput}
+                  onFocus={handleInputFocus}
+                  // onKeyDown={handleSubmit}
+                />
               </div>
             </div>
+            <div className={styles.dropdownArrow} onClick={handleDropdownOpen}>
+              <p className={styles.arrowIndicator}>&#x25BC;</p>
+            </div>
           </div>
+          {isOpen && <hr style={{ width: "95%" }} color="#d9d9d9" />}
         </div>
 
         <button type="submit" className={styles.submitButton}>
@@ -439,21 +439,17 @@ const AdvancedInput = () => {
                 checked={isCountriesToggled}
                 onChange={handleCountriesToggle}
               />
-              {isCountriesToggled ? (
-                <CheckboxPositive
-                  label="activation-countries-toggle"
-                  checked={true}
-                  onChange={handleCountriesToggle}
-                  value={"Activation countries"}
-                />
-              ) : (
-                <CheckboxNegative
-                  label="restricted-countries-toggle"
-                  checked={true}
-                  onChange={handleCountriesToggle}
-                  value={"Restricted countries"}
-                />
-              )}
+              <Checkbox
+                label="activation-countries-toggle"
+                checked={true}
+                onChange={handleCountriesToggle}
+                value={
+                  isCountriesToggled
+                    ? "Select Activation Countries"
+                    : "Select Excluded Countries"
+                }
+                isPositive={isCountriesToggled}
+              />
             </div>
 
             <div className={styles.textWrapper}>
@@ -502,8 +498,8 @@ const AdvancedInput = () => {
             </div>
             <div>
               {filteredCountries.map((country: ICountry) => {
-                return isCountriesToggled ? (
-                  <CheckboxPositive
+                return (
+                  <Checkbox
                     key={country.code}
                     label={country.code}
                     checked={
@@ -514,19 +510,7 @@ const AdvancedInput = () => {
                       handleCountryCheckbox(event, country)
                     }
                     value={country.name}
-                  />
-                ) : (
-                  <CheckboxNegative
-                    key={country.code}
-                    label={country.code}
-                    checked={
-                      checkedCountries.includes(country.name) &&
-                      countryPills.includes(country.name)
-                    }
-                    onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-                      handleCountryCheckbox(event, country)
-                    }
-                    value={country.name}
+                    isPositive={isCountriesToggled}
                   />
                 );
               })}
@@ -534,7 +518,7 @@ const AdvancedInput = () => {
           </div>
         )}
       </form>
-    </>
+    </div>
   );
 };
 
