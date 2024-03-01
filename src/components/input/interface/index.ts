@@ -10,3 +10,8 @@ export interface IContinent {
   continent: string;
   countries: ICountry[];
 }
+
+export interface IFormPayload {
+  restrictedCountries: ICountry[];
+  activationCountries: ICountry[];
+}

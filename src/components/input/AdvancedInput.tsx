@@ -4,7 +4,7 @@ import cn from "classnames";
 
 import styles from "./input.module.scss";
 import { continentsWithCountries } from "../../continents";
-import { IContinent, ICountry } from "./interface";
+import { IContinent, ICountry, IFormPayload } from "./interface";
 import Switch from "../switch/Switch";
 // import Checkbox from "../checkbox/positive/CheckboxPositive";
 import CheckboxNegative from "../checkbox/negative/CheckboxNegative";
@@ -15,10 +15,14 @@ const AdvancedInput = () => {
   const [userInput, setUserInput] = useState<string>("");
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [countryPills, setCountryPills] = useState<string[]>([]);
-
   const [continentTab, setContinentTab] = useState<string>("All");
   const [checkedCountries, setCheckedCountries] = useState<string[]>([]);
   const [isSelectAllClicked, setIsSelectAllClicked] = useState<boolean>(false);
+  const [isCountriesToggled, setIsCountriesToggled] = useState<boolean>(false);
+  const [formPayload, setFormPayload] = useState<IFormPayload>({
+    restrictedCountries: [],
+    activationCountries: [],
+  });
 
   const allCountries = continentsWithCountries.flatMap(
     (continent: IContinent) => {
@@ -84,6 +88,25 @@ const AdvancedInput = () => {
     setCheckedCountries((prevState) => [...prevState, ...matchingCountries]);
     setFilteredCountries(allCountries);
     setContinentTab("All");
+
+    setFormPayload((prevState) => {
+      if (isCountriesToggled) {
+        return {
+          ...prevState,
+          activationCountries: [
+            ...prevState.activationCountries,
+            ...filteredCountries,
+          ],
+        };
+      }
+      return {
+        ...prevState,
+        restrictedCountries: [
+          ...prevState.restrictedCountries,
+          ...filteredCountries,
+        ],
+      };
+    });
   };
 
   const handleRemovePill = (pill: string) => {
@@ -95,6 +118,23 @@ const AdvancedInput = () => {
     });
     setCheckedCountries((prevState) => {
       return prevState.filter((countryName: string) => countryName !== pill);
+    });
+
+    setFormPayload((prevState) => {
+      if (isCountriesToggled) {
+        return {
+          ...prevState,
+          activationCountries: prevState.activationCountries.filter(
+            (country) => country.name !== pill
+          ),
+        };
+      }
+      return {
+        ...prevState,
+        restrictedCountries: prevState.restrictedCountries.filter(
+          (country) => country.name !== pill
+        ),
+      };
     });
 
     const countryContinentOrigin = allCountries.find(
@@ -161,6 +201,18 @@ const AdvancedInput = () => {
     if (isChecked) {
       setCountryPills((prevState) => [...prevState, country.name]);
       setCheckedCountries((prevState) => [...prevState, country.name]);
+      setFormPayload((prevState) => {
+        if (isCountriesToggled) {
+          return {
+            ...prevState,
+            activationCountries: [...prevState.activationCountries, country],
+          };
+        }
+        return {
+          ...prevState,
+          restrictedCountries: [...prevState.restrictedCountries, country],
+        };
+      });
     } else {
       setCountryPills((prevState) => {
         return prevState.filter(
@@ -171,6 +223,23 @@ const AdvancedInput = () => {
         return prevState.filter(
           (countryName: string) => countryName !== country.name
         );
+      });
+
+      setFormPayload((prevState) => {
+        if (isCountriesToggled) {
+          return {
+            ...prevState,
+            activationCountries: prevState.activationCountries.filter(
+              (countryData) => countryData.name !== country.name
+            ),
+          };
+        }
+        return {
+          ...prevState,
+          restrictedCountries: prevState.restrictedCountries.filter(
+            (countryData) => countryData.name !== country.name
+          ),
+        };
       });
     }
 
@@ -212,16 +281,37 @@ const AdvancedInput = () => {
     setCountryPills((prevState) => {
       return _.uniq([...prevState, ...selectAllCountriesByContinent]);
     });
+    setFormPayload((prevState) => {
+      if (isCountriesToggled) {
+        return {
+          ...prevState,
+          activationCountries: _.uniq([
+            ...prevState.activationCountries,
+            ...filteredCountries,
+          ]),
+        };
+      }
+      return {
+        ...prevState,
+        restrictedCountries: _.uniq([
+          ...prevState.restrictedCountries,
+          ...filteredCountries,
+        ]),
+      };
+    });
   };
 
   const handleDeselectAll = (currentContinentTab: string) => {
-    const deselectCountriesByContinent = allCountries
-      .filter((country: ICountry) =>
+    const deselectCountriesByContinent = allCountries.filter(
+      (country: ICountry) =>
         continentTab && continentTab !== "All"
           ? country.region !== currentContinentTab
           : country
-      )
-      .map((country: ICountry) => country.name);
+    );
+
+    const mappedDeselectedCountries = deselectCountriesByContinent.map(
+      (country: ICountry) => country.name
+    );
 
     setIsSelectAllClicked(!isSelectAllClicked);
 
@@ -232,7 +322,7 @@ const AdvancedInput = () => {
       const shouldDeselectOptions = prevState.every((country: string) =>
         mappedFilteredCountries.includes(country)
       );
-      return shouldDeselectOptions ? [] : deselectCountriesByContinent;
+      return shouldDeselectOptions ? [] : mappedDeselectedCountries;
     });
     setFilteredCountries((prevState) => {
       return prevState;
@@ -245,23 +335,59 @@ const AdvancedInput = () => {
       const shouldDeselectOptions = prevState.every((country: string) =>
         mappedFilteredCountries.includes(country)
       );
-      return shouldDeselectOptions ? [] : deselectCountriesByContinent;
+      return shouldDeselectOptions ? [] : mappedDeselectedCountries;
+    });
+
+    setFormPayload((prevState) => {
+      const mappedFilteredCountries = filteredCountries.map(
+        (country: ICountry) => country.name
+      );
+      if (isCountriesToggled) {
+        const shouldDeselectOptionsActivationCountries =
+          prevState.activationCountries.every((country: ICountry) =>
+            mappedFilteredCountries.includes(country.name)
+          );
+        return {
+          ...prevState,
+          activationCountries:
+            continentTab === "All"
+              ? []
+              : shouldDeselectOptionsActivationCountries
+              ? []
+              : deselectCountriesByContinent,
+        };
+      }
+
+      const shouldDeselectOptionsRestrictedCountries =
+        prevState.restrictedCountries.every((country: ICountry) =>
+          mappedFilteredCountries.includes(country.name)
+        );
+      return {
+        ...prevState,
+        restrictedCountries:
+          continentTab === "All"
+            ? []
+            : shouldDeselectOptionsRestrictedCountries
+            ? []
+            : deselectCountriesByContinent,
+      };
     });
   };
 
-  const [isCountriesToggled, setIsCountriesToggled] = useState<boolean>(false);
-
   const handleCountriesToggle = () => {
     setIsCountriesToggled(!isCountriesToggled);
-  };
-
-  const mockData = {
-    restrictedCountries: [{ continent: "Europe", countries: ["Poland"] }],
+    setCountryPills([]);
+    setIsSelectAllClicked(false);
+    setCheckedCountries([]);
+    setFormPayload({
+      activationCountries: [],
+      restrictedCountries: [],
+    });
   };
 
   return (
     <>
-      <Output data={mockData} />
+      <Output data={formPayload} />
       <form className={styles.form} onSubmit={handleSubmit}>
         <div className={styles.contentWrapper}>
           <div className={styles.userInteraction}>

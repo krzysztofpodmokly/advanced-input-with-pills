@@ -14,14 +14,14 @@ const CheckboxNegative = (props: any) => {
         <path
           d="M 10 10 L 90 90"
           stroke="#fff"
-          stroke-dasharray="113"
-          stroke-dashoffset="113"
+          strokeDasharray="113"
+          strokeDashoffset="113"
         ></path>
         <path
           d="M 90 10 L 10 90"
           stroke="#fff"
-          stroke-dasharray="113"
-          stroke-dashoffset="113"
+          strokeDasharray="113"
+          strokeDashoffset="113"
         ></path>
       </svg>
     </div>
